@@ -1,8 +1,9 @@
-from aiogram import Bot, Dispatcher, executor, types
 import sys
 
+from aiogram import Bot, Dispatcher, executor, types
+
 if(len(sys.argv) == 1):
-    print('No token pass')
+    print('Не передан токен для авторизации')
     exit(1)
 
 API_TOKEN = sys.argv[1]
@@ -10,16 +11,33 @@ API_TOKEN = sys.argv[1]
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
-@dp.message_handler(commands=['start']) #Явно указываем в декораторе, на какую команду реагируем. 
+@dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    await message.reply("Привет!\nЯ могу отправить анонимное сообщение в чат\nЧтобы узнать как это сделать введи команду /help") #Так как код работает асинхронно, то обязательно пишем await.
+    await message.reply("""
+Привет!
+Я могу отправить анонимное сообщение в чат
 
-@dp.message_handler(commands=['help']) #Явно указываем в декораторе, на какую команду реагируем. 
+Чтобы узнать как это сделать введи команду /help
+Чтобы узнать больше информации введи команду /info
+    """)
+
+@dp.message_handler(commands=['help'])
 async def help(message: types.Message):
-    await message.reply("Чтобы отравить анонимное сообщение, напиши мне в формате CHAT_ID:MESSAGE") #Так как код работает асинхронно, то обязательно пишем await.
+    await message.reply("""
+Чтобы отравить анонимное сообщение, напиши мне в формате CHAT_ID:MESSAGE
 
-@dp.message_handler() #Создаём новое событие, которое запускается в ответ на любой текст, введённый пользователем.
-async def send_anon_message(message: types.Message): #Создаём функцию с простой задачей — отправить обратно тот же текст, что ввёл пользователь.
+Если хочешь узнать ID чата, это можно сделать через @getidsbot
+    """)
+
+@dp.message_handler(commands=['info'])
+async def help(message: types.Message):
+    await message.reply("""
+Автор: @tablescable
+Ссылка на проект: https://github.com/Thisman/anon_writer_tg_bot
+    """)
+
+@dp.message_handler()
+async def send_anon_message(message: types.Message):
     try:
         [chat_id, message_text] = message.text.split(':')
     except:
